@@ -3,14 +3,14 @@
 #ifndef QUEUE_LIST_H
 #define QUEUE_LIST_H
 
-#include "List.h"
+#include "TForwardList.h"
 
 
 template<class T>
 class QueueList
 {
 private:
-	List<T> list;
+	TForwardList<T> list;
 
 public:
 	void Push(const T& val);
@@ -26,7 +26,7 @@ public:
 template<class T>
 void QueueList<T>::Push(const T& val)
 {
-	list.PushBack(val);
+	list.Push_Back(val);
 }
 
 
@@ -34,7 +34,7 @@ template<class T>
 void QueueList<T>::Pop()
 {
 	if (!list.IsEmpty())
-		list.RemoveAt(0);
+		list.Pop_Front();
 }
 
 
