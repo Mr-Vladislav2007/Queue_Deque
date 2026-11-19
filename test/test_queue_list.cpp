@@ -156,3 +156,257 @@ TEST(QueueListTest, works_with_strings)
     q.Pop();
     EXPECT_EQ("World", q.Front());
 }
+
+// ==========================================
+// Тестирование класса TForwardList
+// ==========================================
+
+TEST(TForwardListTest, can_create_empty_list)
+{
+    TForwardList<int> list;
+    EXPECT_TRUE(list.IsEmpty());
+    EXPECT_EQ(0, list.Size());
+}
+
+
+TEST(TForwardListTest, can_create_list_from_array)
+{
+    int arr[] = { 10, 20, 30 };
+    TForwardList<int> list(arr, 3);
+
+    EXPECT_EQ(3, list.Size());
+    EXPECT_EQ(10, list.Front());
+    EXPECT_EQ(30, list.Back());
+}
+
+
+TEST(TForwardListTest, copied_list_has_its_own_memory)
+{
+    TForwardList<int> list1;
+    list1.Push_Back(1);
+    list1.Push_Back(2);
+
+    TForwardList<int> list2 = list1;
+    list2.Pop_Front();
+    list2.Push_Back(3);
+
+    EXPECT_EQ(2, list1.Size());
+    EXPECT_EQ(1, list1.Front());
+
+    EXPECT_EQ(2, list2.Size());
+    EXPECT_EQ(2, list2.Front());
+}
+
+
+TEST(TForwardListTest, can_assign_list_to_itself)
+{
+    TForwardList<int> list;
+    list.Push_Back(5);
+
+    list = list;
+
+    EXPECT_EQ(1, list.Size());
+    EXPECT_EQ(5, list.Front());
+}
+
+
+TEST(TForwardListTest, can_push_front)
+{
+    TForwardList<int> list;
+    list.Push_Front(20);
+    list.Push_Front(10);
+
+    EXPECT_EQ(2, list.Size());
+    EXPECT_EQ(10, list.Front());
+    EXPECT_EQ(20, list.Back());
+}
+
+
+TEST(TForwardListTest, can_push_back)
+{
+    TForwardList<int> list;
+    list.Push_Back(10);
+    list.Push_Back(20);
+
+    EXPECT_EQ(2, list.Size());
+    EXPECT_EQ(10, list.Front());
+    EXPECT_EQ(20, list.Back());
+}
+
+
+TEST(TForwardListTest, can_pop_front)
+{
+    TForwardList<int> list;
+    list.Push_Back(20);
+    list.Push_Back(10);
+
+    list.Pop_Front();
+
+    EXPECT_EQ(1, list.Size());
+    EXPECT_EQ(10, list.Front());
+}
+
+
+TEST(TForwardListTest, can_pop_back)
+{
+    TForwardList<int> list;
+    list.Push_Back(20);
+    list.Push_Back(10);
+
+    list.Pop_Back();
+
+    EXPECT_EQ(1, list.Size());
+    EXPECT_EQ(20, list.Back());
+}
+
+
+TEST(TForwardListTest, pop_back_single_element_makes_list_empty)
+{
+    TForwardList<int> list;
+    list.Push_Back(10);
+
+    list.Pop_Back();
+
+    EXPECT_TRUE(list.IsEmpty());
+    EXPECT_EQ(0, list.Size());
+}
+
+TEST(TForwardListTest, pop_on_empty_does_not_crash)
+{
+    TForwardList<int> list;
+    ASSERT_NO_THROW(list.Pop_Front());
+    ASSERT_NO_THROW(list.Pop_Back());
+    EXPECT_TRUE(list.IsEmpty());
+}
+
+
+TEST(TForwardListTest, can_insert_at_beginning_and_end)
+{
+    TForwardList<int> list;
+    list.Push_Back(20);
+
+    list.InsertAt(0, 10);
+    list.InsertAt(2, 30);
+
+    EXPECT_EQ(3, list.Size());
+    EXPECT_EQ(10, list.Front());
+    EXPECT_EQ(30, list.Back());
+}
+
+
+TEST(TForwardListTest, can_insert_middle)
+{
+    TForwardList<int> list;
+    list.Push_Back(10);
+    list.Push_Back(30);
+
+    list.InsertAt(1, 20);
+
+    EXPECT_EQ(3, list.Size());
+    EXPECT_EQ(10, list[0]);
+    EXPECT_EQ(20, list[1]);
+    EXPECT_EQ(30, list[2]);
+}
+
+
+TEST(TForwardListTest, insert_at_invalid_index_does_nothing)
+{
+    TForwardList<int> list;
+    list.Push_Back(10);
+
+    list.InsertAt(-1, 5);
+    list.InsertAt(5, 5);
+
+    EXPECT_EQ(1, list.Size());
+}
+
+
+TEST(TForwardListTest, can_remove_at_middle)
+{
+    TForwardList<int> list;
+    list.Push_Back(10);
+    list.Push_Back(20);
+    list.Push_Back(30);
+
+    list.RemoveAt(1);
+    
+    EXPECT_EQ(2, list.Size());
+    EXPECT_EQ(10, list[0]);
+    EXPECT_EQ(30, list[1]);
+}
+
+
+TEST(TForwardListTest, can_remove_at_beginning_and_end)
+{
+    TForwardList<int> list;
+    list.Push_Back(10);
+    list.Push_Back(20);
+    list.Push_Back(30);
+
+    list.RemoveAt(0);
+    list.RemoveAt(1);
+
+    EXPECT_EQ(1, list.Size());
+    EXPECT_EQ(20, list.Front());
+    EXPECT_EQ(20, list.Back());
+}
+
+
+TEST(TForwardListTest, remove_at_invalid_index_does_nothing)
+{
+    TForwardList<int> list;
+    list.Push_Back(10);
+
+    list.RemoveAt(-1);
+    list.RemoveAt(5);
+
+    EXPECT_EQ(1, list.Size());
+}
+
+
+TEST(TForwardListTest, can_clear_list)
+{
+    TForwardList<int> list;
+    list.Push_Back(1);
+    list.Push_Back(2);
+
+    list.Clear();
+
+    EXPECT_TRUE(list.IsEmpty());
+    EXPECT_EQ(0, list.Size());
+}
+
+
+TEST(TForwardListTest, can_access_element_by_index)
+{
+    TForwardList<int> list;
+    list.Push_Back(10);
+    list.Push_Back(20);
+    list.Push_Back(30);
+
+    EXPECT_EQ(10, list[0]);
+    EXPECT_EQ(20, list[1]);
+    EXPECT_EQ(30, list[2]);
+
+    list[1] = 99;
+    EXPECT_EQ(99, list[1]);
+}
+
+
+TEST(TForwardListTest, throws_when_accessing_invalid_index)
+{
+    TForwardList<int> list;
+    list.Push_Back(10);
+
+    ASSERT_ANY_THROW(list[-1]);
+    ASSERT_ANY_THROW(list[5]);
+}
+
+
+TEST(TForwardListTest, throws_when_getting_front_or_back_of_empty_list)
+{
+    TForwardList<int> list;
+
+    ASSERT_ANY_THROW(list.Front());
+    ASSERT_ANY_THROW(list.Back());
+}
