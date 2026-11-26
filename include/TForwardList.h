@@ -26,6 +26,51 @@ class TForwardList
 	int size;												// размер списка
 
 public:
+	class Iterator
+	{
+	private:
+		Node* ptr;
+
+	public:
+		Iterator(Node* p = nullptr) : ptr(p) {}
+
+		T& operator*() const
+		{
+			return ptr->value;
+		}
+
+		T* operator->() const
+		{
+			return &(ptr->value);
+		}
+
+		Iterator& operator++()
+		{
+			if (ptr != nullptr)
+				ptr = ptr->next;
+
+			return *this;
+		}
+
+		Iterator operator++(int)
+		{
+			Iterator tmp = *this;
+			++(*this);
+			return tmp;
+		}
+
+		bool operator==(const Iterator& other) const
+		{
+			return ptr == other.ptr;
+		}
+
+		bool operator!=(const Iterator& other) const
+		{
+			return ptr != other.ptr;
+		}
+
+	};
+
 	TForwardList();											// конструктор по умолчанию
 	TForwardList(const T* arr, int n);						// конструктор из динамического массива
 	TForwardList(const TForwardList<T>& other);				// конструктор копирования
@@ -48,6 +93,16 @@ public:
 	T Back() const;											// возвращение последнего элемента
 	bool IsEmpty() const;									// проверка списка на пустоту
 	int Size() const;										// текущий размер списка
+
+	Iterator begin() const
+	{
+		return Iterator(first);
+	}
+
+	Iterator end() const
+	{
+		return Iterator(nullptr);
+	}
 
 
 	friend ostream& operator<<(ostream& os, const TForwardList<T>& list)

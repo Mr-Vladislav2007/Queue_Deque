@@ -9,27 +9,87 @@
 using namespace std;
 
 
-template<class T>
-class Node									// вспомогательная структура для списка (ячейка)
-{
-public:
-	T value;								// значение ячейки
-	Node* prev;								// указатель на предыдущую ячейку
-	Node* next;								// указатель на следующую ячейку
-
-	Node(const T& val) : value(val), prev(nullptr), next(nullptr) {}
-};
-
 
 template<class T>
 class List
 {
 private:
-	Node<T>* start;							// указатель на первый элемент
-	Node<T>* finish;						// указатель на последний элемент
+	class Node									// вспомогательная структура для списка (ячейка)
+	{
+	public:
+		T value;								// значение ячейки
+		Node* prev;								// указатель на предыдущую ячейку
+		Node* next;								// указатель на следующую ячейку
+
+		Node(const T& val) : value(val), prev(nullptr), next(nullptr) {}
+	};
+
+	Node* start;							// указатель на первый элемент
+	Node* finish;						// указатель на последний элемент
 	size_t size;							// размер списка
 
 public:
+	class Iterator
+	{
+	private:
+		Node* ptr;
+		List* list;
+		
+	public:
+		Iterator(Node* p, List* l) : ptr(p), list(l) {}
+
+		T& operator*() const
+		{
+			return ptr->value;
+		}
+
+		T* operator->() const
+		{
+			return &(ptr->value);
+		}
+
+		Iterator& operator++()
+		{
+			if (ptr != nullptr)
+				ptr = ptr->next;
+			return *this;
+		}
+
+		Iterator operator++(int)
+		{
+			Iterator tmp = *this;
+			++(*this);
+			return tmp;
+		}
+
+		Iterator& operator--()
+		{
+			if (ptr == nullptr)
+				ptr = list->finish;
+			else
+				ptr = ptr->prev;
+
+			return *this;
+		}
+
+		Iterator operator--(int)
+		{
+			Iterator tmp = *this;
+			--(*this);
+			return tmp;
+		}
+
+		bool operator==(const Iterator& other) const
+		{
+			return ptr == other.ptr;
+		}
+
+		bool operator!=(const Iterator& other) const
+		{
+			return ptr != other.ptr;
+		}
+	};
+
 	List();									// конструктор по умолчанию
 	List(const List& other);				// конструктор копирования
 	List& operator=(const List& other);		// оператор присваивания
@@ -52,10 +112,20 @@ public:
 
 	size_t Size() const;					// размер списка
 
+	Iterator begin()
+	{
+		return Iterator(start, this);
+	}
+
+	Iterator end()
+	{
+		return Iterator(nullptr, this);
+	}
+
 
 	friend ostream& operator<<(ostream& os, const List<T>& list)
 	{
-		Node<T>* current = list.start;
+		Node* current = list.start;
 		os << "[";
 		while (current != nullptr)
 		{
@@ -79,7 +149,7 @@ List<T>::List() : start(nullptr), finish(nullptr), size(0) {}
 template<class T>
 List<T>::List(const List& other) : start(nullptr), finish(nullptr), size(0)
 {
-	Node<T>* current = other.start;
+	Node* current = other.start;
 	while (current != nullptr)
 	{
 		PushBack(current->value);
@@ -96,7 +166,7 @@ List<T>& List<T>::operator=(const List& other)
 
 	Clear();
 
-	Node<T>* current = other.start;
+	Node* current = other.start;
 	while (current != nullptr)
 	{
 		PushBack(current->value);
@@ -117,11 +187,11 @@ List<T>::~List()
 template<class T>
 void List<T>::Clear()
 {
-	Node<T>* tmp = start;
+	Node* tmp = start;
 
 	while (tmp != nullptr)
 	{
-		Node<T>* NextNode = tmp->next;
+		Node* NextNode = tmp->next;
 		delete tmp;
 		tmp = NextNode;
 	}
@@ -134,7 +204,7 @@ void List<T>::Clear()
 template<class T>
 void List<T>::PushBack(const T& val)
 {
-	Node<T>* tmp = new Node<T>(val);
+	Node* tmp = new Node(val);
 
 	if (start == nullptr)
 		start = finish = tmp;
@@ -154,7 +224,7 @@ void List<T>::PopBack()
 	if (finish == nullptr)
 		return;
 
-	Node<T>* tmp = finish;
+	Node* tmp = finish;
 	finish = finish->prev;
 
 	if (finish != nullptr)
@@ -170,7 +240,7 @@ void List<T>::PopBack()
 template<class T>
 void List<T>::InsertAt(size_t index, const T& val)
 {
-	Node<T>* new_node = new Node<T>(val);
+	Node* new_node = new Node(val);
 
 	if (index == 0)
 	{
@@ -191,7 +261,7 @@ void List<T>::InsertAt(size_t index, const T& val)
 
 	else
 	{
-		Node<T>* current = start;
+		Node* current = start;
 		for (size_t i = 0; i < index - 1; i++)
 		{
 			current = current->next;
@@ -210,7 +280,7 @@ void List<T>::InsertAt(size_t index, const T& val)
 template<class T>
 void List<T>::RemoveAt(size_t index)
 {
-	Node<T>* current = nullptr;
+	Node* current = nullptr;
 	if (index == 0)
 	{
 		current = start;
@@ -246,7 +316,7 @@ void List<T>::RemoveAt(size_t index)
 template<class T>
 T& List<T>::operator[](size_t index)
 {
-	Node<T>* current = start;
+	Node* current = start;
 	for (size_t i = 0; i < index; i++)
 		current = current->next;
 
@@ -257,7 +327,7 @@ T& List<T>::operator[](size_t index)
 template<class T>
 const T& List<T>::operator[](size_t index) const
 {
-	Node<T>* current = start;
+	Node* current = start;
 	for (size_t i = 0; i < index; i++)
 		current = current->next;
 
@@ -293,9 +363,6 @@ size_t List<T>::Size() const
 {
 	return size;
 }
-
-
-
 
 
 #endif
